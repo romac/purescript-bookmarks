@@ -1,0 +1,18 @@
+{
+    "name": "purescript-bookmarks",
+    "set": "romac-0.11.8",
+    "source": "https://github.com/romac/package-sets.git",
+    "depends": [
+      "aff",
+      "datetime",
+      "eff",
+      "either",
+      "foldable-traversable",
+      "foreign",
+      "functions",
+      "maybe",
+      "prelude",
+      "transformers",
+      "uri"
+    ]
+}

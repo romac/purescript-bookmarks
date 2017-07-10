@@ -1,0 +1,15 @@
+{
+  "preset": "grunt",
+  "disallowSpacesInFunctionExpression": null,
+  "requireSpacesInFunctionExpression": {
+    "beforeOpeningCurlyBrace": true
+  },
+  "disallowSpacesInAnonymousFunctionExpression": null,
+  "requireSpacesInAnonymousFunctionExpression": {
+    "beforeOpeningCurlyBrace": true
+  },
+  "disallowSpacesInsideObjectBrackets": null,
+  "requireSpacesInsideObjectBrackets": "all",
+  "validateQuoteMarks": "\"",
+  "requireCurlyBraces": null
+}
