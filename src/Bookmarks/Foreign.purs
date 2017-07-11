@@ -20,90 +20,131 @@ module Bookmarks.Foreign
   , readRawTreeNodes
   ) where
 
-import Prelude                   (Unit, bind, pure, ($), (<<<), (<>), (>>=))
-
-import Control.Monad.Aff         (Aff, makeAff)
-import Control.Monad.Eff         (kind Effect, Eff)
-import Data.DateTime             (DateTime)
-import Data.DateTime.Instant     (instant, toDateTime)
-import Data.Either               (Either(..))
-import Data.Foreign              (F, Foreign, ForeignError(..), readArray, readNumber, readString, readNullOrUndefined, fail)
-import Data.Foreign.Index        ((!))
-import Data.Function.Uncurried   (Fn1, runFn1, Fn2, runFn2, Fn3, runFn3)
-import Data.Maybe                (maybe)
-import Data.Time.Duration        (Milliseconds(..))
-import Data.Traversable          (traverse)
-import Data.URI                  (URI, runParseURI)
+import Bookmarks.Types (BOOKMARKS, RawChanges, RawCreateDetails, RawDestination, NodeId(..), RawTreeNode(..), Unmodifiable(..))
+import Control.Monad.Aff (Aff, makeAff)
+import Control.Monad.Eff.Exception (Error)
+import Control.Monad.Eff.Uncurried (EffFn1, EffFn2, mkEffFn1, runEffFn2)
+import Data.DateTime (DateTime)
+import Data.DateTime.Instant (instant, toDateTime)
+import Data.Either (Either(..))
+import Data.Foreign (F, Foreign, ForeignError(..), readArray, readNumber, readString, readNullOrUndefined, fail)
+import Data.Foreign.Index ((!))
+import Data.Maybe (maybe)
+import Data.Time.Duration (Milliseconds(..))
+import Data.Traversable (traverse)
+import Data.URI (URI, runParseURI)
+import Prelude (Unit, bind, pure, ($), (<<<), (<>), (>>=))
 import Text.Parsing.StringParser (ParseError(..))
-
-import Bookmarks.Types           (BOOKMARKS, RawChanges, RawCreateDetails, RawDestination,
-                                  NodeId(..), RawTreeNode(..), Unmodifiable(..))
-
 -- TODO: foreign methods should return Foreign, and be parsed in the Bookmarks module
 
-foreign import createImpl :: forall eff. Fn2 (Foreign -> Eff eff Unit) RawCreateDetails (Eff eff Unit)
+type EffFnAff eff a = EffFn2 eff (EffFn1 eff Error Unit) (EffFn1 eff a Unit) Unit
+
+fromEffFnAff
+  :: forall eff a
+   . EffFnAff eff a
+  -> Aff eff a
+fromEffFnAff f = makeAff (\error success -> runEffFn2 f (mkEffFn1 error) (mkEffFn1 success))
+
+foreign import createImpl
+  :: forall eff
+   . RawCreateDetails
+  -> EffFnAff (bookmarks :: BOOKMARKS | eff) Foreign
 
 create :: forall eff. RawCreateDetails -> Aff (bookmarks :: BOOKMARKS | eff) Foreign
-create bookmark = makeAff (\error success -> runFn2 createImpl success bookmark)
+create = fromEffFnAff <<< createImpl
 
-foreign import getImpl :: forall eff. Fn2 (Foreign -> Eff eff Unit) NodeId (Eff eff Unit)
+foreign import getImpl
+  :: forall eff
+   . NodeId
+  -> EffFnAff (bookmarks :: BOOKMARKS | eff) Foreign
 
 get :: forall eff. NodeId -> Aff (bookmarks :: BOOKMARKS | eff) Foreign
-get id = makeAff (\error success -> runFn2 getImpl success id)
+get = fromEffFnAff <<< getImpl
 
-foreign import getManyImpl :: forall eff. Fn2 (Array Foreign -> Eff eff Unit) (Array NodeId) (Eff eff Unit)
+foreign import getManyImpl
+  :: forall eff
+   . Array NodeId
+  -> EffFnAff (bookmarks :: BOOKMARKS | eff) (Array Foreign)
 
 getMany :: forall eff. Array NodeId -> Aff (bookmarks :: BOOKMARKS | eff) (Array Foreign)
-getMany ids = makeAff (\error success -> runFn2 getManyImpl success ids)
+getMany = fromEffFnAff <<< getManyImpl
 
-foreign import getChildrenImpl :: forall eff. Fn2 (Array Foreign -> Eff eff Unit) NodeId (Eff eff Unit)
+foreign import getChildrenImpl
+  :: forall eff
+   . NodeId
+  -> EffFnAff (bookmarks :: BOOKMARKS | eff) (Array Foreign)
 
 getChildren :: forall eff. NodeId -> Aff (bookmarks :: BOOKMARKS | eff) (Array Foreign)
-getChildren id = makeAff (\error success -> runFn2 getChildrenImpl success id)
+getChildren = fromEffFnAff <<< getChildrenImpl
 
-foreign import getRecentImpl :: forall eff. Fn2 (Array Foreign -> Eff eff Unit) Number (Eff eff Unit)
+foreign import getRecentImpl
+  :: forall eff
+   . Number
+  -> EffFnAff (bookmarks :: BOOKMARKS | eff) (Array Foreign)
 
 getRecent :: forall eff. Number -> Aff (bookmarks :: BOOKMARKS | eff) (Array Foreign)
-getRecent numberOfItems = makeAff (\error success -> runFn2 getRecentImpl success numberOfItems)
+getRecent = fromEffFnAff <<< getRecentImpl
 
-foreign import getTreeImpl :: forall eff. Fn1 (Array Foreign -> Eff eff Unit) (Eff eff Unit)
+foreign import getTreeImpl
+  :: forall eff
+  . EffFnAff (bookmarks :: BOOKMARKS | eff) (Array Foreign)
 
 getTree :: forall eff. Aff (bookmarks :: BOOKMARKS | eff) (Array Foreign)
-getTree = makeAff (\error success -> runFn1 getTreeImpl success)
+getTree = fromEffFnAff getTreeImpl
 
-foreign import getSubTreeImpl :: forall eff. Fn2 (Array Foreign -> Eff eff Unit) NodeId (Eff eff Unit)
+foreign import getSubTreeImpl
+  :: forall eff
+   . NodeId
+  -> EffFnAff (bookmarks :: BOOKMARKS | eff) (Array Foreign)
 
 getSubTree :: forall eff. NodeId -> Aff (bookmarks :: BOOKMARKS | eff) (Array Foreign)
-getSubTree id = makeAff (\error success -> runFn2 getSubTreeImpl success id)
+getSubTree = fromEffFnAff <<< getSubTreeImpl
 
-foreign import searchImpl :: forall eff. Fn2 (Array Foreign -> Eff eff Unit) String (Eff eff Unit)
+foreign import searchImpl
+  :: forall eff
+   . String
+  -> EffFnAff (bookmarks :: BOOKMARKS | eff) (Array Foreign)
 
 search :: forall eff. String -> Aff (bookmarks :: BOOKMARKS | eff) (Array Foreign)
-search query = makeAff (\error success -> runFn2 searchImpl success query)
+search = fromEffFnAff <<< searchImpl
 
 -- TODO: Add searchFull
 
-foreign import moveImpl :: forall eff. Fn3 (Foreign -> Eff eff Unit) NodeId RawDestination (Eff eff Unit)
+foreign import moveImpl
+  :: forall eff
+   . NodeId
+  -> RawDestination
+  -> EffFnAff (bookmarks :: BOOKMARKS | eff) Foreign
 
 move :: forall eff. NodeId -> RawDestination -> Aff (bookmarks :: BOOKMARKS | eff) Foreign
-move id dest = makeAff (\error success -> runFn3 moveImpl success id dest)
+move id dest = fromEffFnAff (moveImpl id dest)
 
 -- TODO: Allow passing a subset of Changes
 
-foreign import updateImpl :: forall eff. Fn3 (Foreign -> Eff eff Unit) NodeId RawChanges (Eff eff Unit)
+foreign import updateImpl
+  :: forall eff
+   . NodeId
+  -> RawChanges
+  -> EffFnAff (bookmarks :: BOOKMARKS | eff) Foreign
 
 update :: forall eff. NodeId -> RawChanges -> Aff (bookmarks :: BOOKMARKS | eff) Foreign
-update id changes = makeAff (\error success -> runFn3 updateImpl success id changes)
+update id changes = fromEffFnAff (updateImpl id changes)
 
-foreign import removeImpl :: forall eff. Fn2 (Unit -> Eff eff Unit) NodeId (Eff eff Unit)
+foreign import removeImpl
+  :: forall eff
+   . NodeId
+  -> EffFnAff (bookmarks :: BOOKMARKS | eff) Unit
 
 remove :: forall eff. NodeId -> Aff (bookmarks :: BOOKMARKS | eff) Unit
-remove id = makeAff (\error success -> runFn2 removeImpl success id)
+remove = fromEffFnAff <<< removeImpl
 
-foreign import removeTreeImpl :: forall eff. Fn2 (Unit -> Eff eff Unit) NodeId (Eff eff Unit)
+foreign import removeTreeImpl
+  :: forall eff
+   . NodeId
+  -> EffFnAff (bookmarks :: BOOKMARKS | eff) Unit
 
 removeTree :: forall eff. NodeId -> Aff (bookmarks :: BOOKMARKS | eff) Unit
-removeTree id = makeAff (\error success -> runFn2 removeTreeImpl success id)
+removeTree = fromEffFnAff <<< removeTreeImpl
 
 readUnmodifable :: Foreign -> F Unmodifiable
 readUnmodifable value = do
