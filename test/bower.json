@@ -1,0 +1,41 @@
+{
+  "name": "purescript-bookmarks-tests",
+  "homepage": "https://github.com/romac/purescript-bookmarks",
+  "authors": [
+    "Romain Ruetschi <romain.ruetschi@gmail.com>"
+  ],
+  "description": "Test suite for purescript-bookmarks",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/romac/purescript-bookmarks.git"
+  },
+  "dependencies": {
+    "purescript-aff": "^3.0.0",
+    "purescript-datetime": "^3.0.0",
+    "purescript-eff": "^3.1.0",
+    "purescript-either": "^3.0.0",
+    "purescript-foldable-traversable": "^3.0.0",
+    "purescript-foreign": "^4.0.0",
+    "purescript-functions": "^3.0.0",
+    "purescript-maybe": "^3.0.0",
+    "purescript-prelude": "^3.0.0",
+    "purescript-uri": "^3.0.0",
+    "purescript-transformers": "^3.4.0",
+    "purescript-bookmarks": "../",
+    "purescript-test-unit": "^11.0.0"
+  },
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "node_modules",
+    "output",
+    "test",
+    "bower.json",
+    "package.json",
+    "psc-package.json"
+  ],
+  "devDependencies": {
+    "purescript-psci-support": "^3.0.0"
+  }
+}

@@ -1,0 +1,14 @@
+{
+    "manifest_version" : 2,
+    "name"           : "purescript-bookmarks-test",
+    "version"        : "1.0.0",
+    "description"    : "Test suite for purescript-bookmarks",
+    "permissions": [
+        "bookmarks"
+    ],
+    "web_accessible_resources": [
+      "tests.html",
+      "bundle.js"
+    ],
+    "options_page": "tests.html"
+}
