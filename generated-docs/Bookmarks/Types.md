@@ -36,16 +36,34 @@ newtype RawTreeNode
   = RawTreeNode { id :: NodeId, parentId :: Maybe NodeId, index :: Maybe Number, url :: Maybe URI, title :: String, dateAdded :: Maybe DateTime, dateGroupModified :: Maybe DateTime, unmodifiable :: Maybe Unmodifiable, children :: Maybe (Array RawTreeNode) }
 ```
 
+#### `RawCreateDetails`
+
+``` purescript
+type RawCreateDetails = { parentId :: Nullable NodeId, index :: Nullable Number, title :: Nullable String, url :: Nullable String }
+```
+
 #### `CreateDetails`
 
 ``` purescript
 type CreateDetails = { parentId :: Maybe NodeId, index :: Maybe Number, title :: Maybe String, url :: Maybe URI }
 ```
 
+#### `RawDestination`
+
+``` purescript
+type RawDestination = { id :: Nullable NodeId, index :: Nullable Number }
+```
+
 #### `Destination`
 
 ``` purescript
 type Destination = { id :: Maybe NodeId, index :: Maybe Number }
+```
+
+#### `RawChanges`
+
+``` purescript
+type RawChanges = { title :: Nullable String, url :: Nullable String }
 ```
 
 #### `Changes`

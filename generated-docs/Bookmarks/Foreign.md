@@ -3,7 +3,7 @@
 #### `create`
 
 ``` purescript
-create :: forall eff. CreateDetails -> Aff (bookmarks :: BOOKMARKS | eff) Foreign
+create :: forall eff. RawCreateDetails -> Aff (bookmarks :: BOOKMARKS | eff) Foreign
 ```
 
 #### `get`
@@ -51,13 +51,13 @@ search :: forall eff. String -> Aff (bookmarks :: BOOKMARKS | eff) (Array Foreig
 #### `move`
 
 ``` purescript
-move :: forall eff. NodeId -> Destination -> Aff (bookmarks :: BOOKMARKS | eff) Foreign
+move :: forall eff. NodeId -> RawDestination -> Aff (bookmarks :: BOOKMARKS | eff) Foreign
 ```
 
 #### `update`
 
 ``` purescript
-update :: forall eff. NodeId -> Changes -> Aff (bookmarks :: BOOKMARKS | eff) Foreign
+update :: forall eff. NodeId -> RawChanges -> Aff (bookmarks :: BOOKMARKS | eff) Foreign
 ```
 
 #### `remove`
