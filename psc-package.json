@@ -1,7 +1,7 @@
 {
     "name": "purescript-bookmarks",
-    "set": "romac-0.11.8",
-    "source": "https://github.com/romac/package-sets.git",
+    "set": "psc-0.11.6-prime",
+    "source": "https://github.com/purescript/package-sets.git",
     "depends": [
       "aff",
       "datetime",
@@ -13,6 +13,7 @@
       "maybe",
       "prelude",
       "transformers",
-      "uri"
+      "uri",
+      "nullable"
     ]
 }
