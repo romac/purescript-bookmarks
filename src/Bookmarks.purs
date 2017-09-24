@@ -1,6 +1,9 @@
 
 module Bookmarks
-  ( module Bookmarks.Types
+  ( module Types
+  , CreateDetails
+  , Destination
+  , Changes
   , create
   , get
   , getChildren
@@ -21,15 +24,33 @@ import Control.Monad.Aff    (Aff)
 import Control.Monad.Except (runExcept)
 import Data.Either          (fromRight)
 import Data.Foreign         (F, Foreign)
-import Data.Maybe           (isJust, fromJust)
+import Data.Maybe           (Maybe, isJust, fromJust)
 import Data.Nullable        (toNullable)
-import Data.URI             (printURI)
+import Data.URI             (URI, printURI)
 import Partial.Unsafe       (unsafePartial)
 
 import Bookmarks.Types
+import Bookmarks.Types      (BOOKMARKS, TreeNode(..), NodeId(..), Unmodifiable(..)) as Types
 
 import Bookmarks.Foreign    (readRawTreeNode)
 import Bookmarks.Foreign    as Foreign
+
+type CreateDetails =
+  { parentId :: Maybe NodeId
+  , index    :: Maybe Number
+  , title    :: Maybe String
+  , url      :: Maybe URI
+  }
+
+type Destination =
+  { id    :: Maybe NodeId
+  , index :: Maybe Number
+  }
+
+type Changes =
+  { title :: Maybe String
+  , url   :: Maybe String
+  }
 
 create :: forall eff. CreateDetails -> Aff (bookmarks :: BOOKMARKS | eff) TreeNode
 create = map unsafeReadTreeNode <<< Foreign.create <<< toRawCreateDetails

@@ -5,11 +5,8 @@ module Bookmarks.Types
   , NodeId(..)
   , TreeNode(..)
   , RawTreeNode(..)
-  , CreateDetails
   , RawCreateDetails
-  , Destination
   , RawDestination
-  , Changes
   , RawChanges
   ) where
 
@@ -74,30 +71,13 @@ type RawCreateDetails =
   , url      :: Nullable String
   }
 
-type CreateDetails =
-  { parentId :: Maybe NodeId
-  , index    :: Maybe Number
-  , title    :: Maybe String
-  , url      :: Maybe URI
-  }
-
 type RawDestination =
   { id    :: Nullable NodeId
   , index :: Nullable Number
   }
 
-type Destination =
-  { id    :: Maybe NodeId
-  , index :: Maybe Number
-  }
-
 type RawChanges =
   { title :: Nullable String
   , url   :: Nullable String
-  }
-
-type Changes =
-  { title :: Maybe String
-  , url   :: Maybe String
   }
 
