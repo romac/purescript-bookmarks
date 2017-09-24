@@ -7,6 +7,13 @@
 
 A type-safe wrapper for the [WebExtensions bookmarks API](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/bookmarks).
 
+## Compatibility
+
+Currently tested in:
+
+- Firefox
+- Chrome
+
 ## Installation
 
 ```
